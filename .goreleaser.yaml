@@ -1,0 +1,26 @@
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - main: ./main.go
+    id: chromrofi
+    binary: chromrofi
+    ldflags:
+      - -s
+      - -w
+    env:
+      - CGO_ENABLED=0
+      - GOPRIVATE=github.com/omarahm3/chromrofi
+    goos:
+      - linux
+    goarch:
+      - amd64
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
