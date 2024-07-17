@@ -16,6 +16,7 @@ import (
 var (
 	orderBy string
 	limit   int
+	profile string
 	rootCmd = &cobra.Command{
 		Use:   "chromrofi",
 		Short: "chromrofi is a CLI for rofi to browse chrome history",
@@ -25,6 +26,7 @@ var (
 
 func Init() {
 	rootCmd.PersistentFlags().StringVarP(&orderBy, "order-by", "o", "last_visit_time", "Property to order by")
+	rootCmd.PersistentFlags().StringVarP(&profile, "profile", "p", "Default", "Chrome profile to use")
 	rootCmd.PersistentFlags().IntVarP(&limit, "limit", "l", 10, "Number of results to return")
 	if err := rootCmd.Execute(); err != nil {
 		message("failed to run chromrofi", &err)
@@ -32,9 +34,9 @@ func Init() {
 }
 
 func runCommand(cmd *cobra.Command, args []string) {
-	c, err := chrome.GetChrome()
+	c, err := chrome.GetChrome(profile)
 	if err != nil {
-		message("failed to obtain chrome history database", &err)
+		message("failed to initialize chrome instance", &err)
 	}
 	defer c.Close()
 
@@ -82,7 +84,7 @@ func getSelection(args []string) string {
 
 func message(message string, err *error) {
 	if err != nil {
-		fmt.Printf("[ERROR]> %s: %s\n", message, *err)
+		fmt.Printf("[ERROR]> %s (%s)\n", message, *err)
 		os.Exit(1)
 	}
 

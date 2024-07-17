@@ -34,8 +34,10 @@ Flags:
   -h, --help              help for chromrofi
   -l, --limit int         Number of results to return (default 10)
   -o, --order-by string   Property to order by (default "last_visit_time")
+  -p, --profile string    Chrome profile to use (default "Default")
 ```
 
 ```sh
 rofi -show cr -modi "cr:chromrofi --order-by visit_count --limit 20" -config ~/.config/rofi/config.rasi
+rofi -show cr -modi "cr:chromrofi --profile 'Profile 1' --order-by visit_count --limit 20" -config ~/.config/rofi/config.rasi
 ```
