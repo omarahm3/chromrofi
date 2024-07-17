@@ -35,6 +35,7 @@ Flags:
   -l, --limit int         Number of results to return (default 10)
   -o, --order-by string   Property to order by (default "last_visit_time")
   -p, --profile string    Chrome profile to use (default "Default")
+  -s, --use-search        Google if no results found
 ```
 
 ```sh
