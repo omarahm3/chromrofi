@@ -14,10 +14,11 @@ import (
 )
 
 var (
-	orderBy string
-	limit   int
-	profile string
-	rootCmd = &cobra.Command{
+	orderBy   string
+	limit     int
+	profile   string
+	useSearch bool
+	rootCmd   = &cobra.Command{
 		Use:   "chromrofi",
 		Short: "chromrofi is a CLI for rofi to browse chrome history",
 		Run:   runCommand,
@@ -28,6 +29,7 @@ func Init() {
 	rootCmd.PersistentFlags().StringVarP(&orderBy, "order-by", "o", "last_visit_time", "Property to order by")
 	rootCmd.PersistentFlags().StringVarP(&profile, "profile", "p", "Default", "Chrome profile to use")
 	rootCmd.PersistentFlags().IntVarP(&limit, "limit", "l", 10, "Number of results to return")
+	rootCmd.PersistentFlags().BoolVarP(&useSearch, "use-search", "s", false, "Google if no results found")
 	if err := rootCmd.Execute(); err != nil {
 		message("failed to run chromrofi", &err)
 	}
@@ -67,11 +69,25 @@ func handleSelection(args []string, db *database.Database) {
 		message("failed to find url in chrome database", &err)
 	}
 
-	if err := openUrl(url.Url); err != nil {
+	var u string
+
+	if url == nil && useSearch {
+		u = searchUrl(title)
+	} else if url != nil {
+		u = url.Url
+	} else {
+		os.Exit(0)
+	}
+
+	if err := openUrl(u); err != nil {
 		message("failed to open url in browser", &err)
 	}
 
 	os.Exit(0)
+}
+
+func searchUrl(query string) string {
+	return fmt.Sprintf("https://www.google.com/search?q=%s", query)
 }
 
 func openUrl(url string) error {
