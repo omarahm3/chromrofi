@@ -9,7 +9,7 @@ require (
 )
 
 require (
-	git.sr.ht/~jcmuller/go-rofi-script v0.0.2
+	git.sr.ht/~jcmuller/go-rofi v0.2.0
 	github.com/spf13/cobra v1.8.1
 )
 
