@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/mitchellh/go-homedir"
+	"github.com/omarahm3/chromrofi/platform/browser"
 )
 
 type Url struct {
@@ -27,12 +28,22 @@ var (
 )
 
 type Chrome struct {
+	browser.Browser
 	Profile         string
-	HistoryLocation string
+	historyLocation string
+	localState      *LocalState
 }
 
 func (c *Chrome) Close() error {
-	return os.Remove(c.HistoryLocation)
+	return os.Remove(c.historyLocation)
+}
+
+func (c *Chrome) GetHistoryLocation() string {
+	return c.historyLocation
+}
+
+func (c *Chrome) GetLocalState() (*LocalState, error) {
+	return c.localState, nil
 }
 
 func GetChrome(profile string) (*Chrome, error) {
@@ -60,7 +71,7 @@ func GetChrome(profile string) (*Chrome, error) {
 
 	return &Chrome{
 		Profile:         key,
-		HistoryLocation: tmpHistory,
+		historyLocation: tmpHistory,
 	}, nil
 }
 

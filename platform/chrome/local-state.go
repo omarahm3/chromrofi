@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+
+	"github.com/omarahm3/chromrofi/platform/browser"
 )
 
 type raw_profile struct {
@@ -20,6 +22,7 @@ type profile_info struct {
 }
 
 type LocalState struct {
+	browser.LocalState
 	Profiles []Profile
 }
 

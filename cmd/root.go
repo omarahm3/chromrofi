@@ -42,7 +42,7 @@ func runCommand(cmd *cobra.Command, args []string) {
 	}
 	defer c.Close()
 
-	db := database.NewDatabase(fmt.Sprintf("file:%s?mode=ro", c.HistoryLocation))
+	db := database.NewDatabase(fmt.Sprintf("file:%s?mode=ro", c.GetHistoryLocation()))
 	db.Connect(context.Background())
 	defer db.Close()
 
