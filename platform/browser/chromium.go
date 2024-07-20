@@ -1,4 +1,4 @@
-package chrome
+package browser
 
 import (
 	"fmt"
@@ -20,25 +20,34 @@ type Url struct {
 }
 
 var (
-	ErrFailedToGetChromePath      = fmt.Errorf("failed to get chrome path")
+	ErrFailedToGetChromiumPath    = fmt.Errorf("failed to get chromium browser path")
 	ErrFailedToGetLocalState      = fmt.Errorf("failed to get local state")
 	ErrFailedToLoadProfileHistory = fmt.Errorf("failed to load profile history")
 	ErrInvalidProfile             = fmt.Errorf("invalid profile")
 )
 
-type Chrome struct {
+type ChromiumBrowser struct {
 	Profile         string
-	HistoryLocation string
+	historyLocation string
+	localState      *LocalState
 }
 
-func (c *Chrome) Close() error {
-	return os.Remove(c.HistoryLocation)
+func (c *ChromiumBrowser) Close() error {
+	return os.Remove(c.historyLocation)
 }
 
-func GetChrome(profile string) (*Chrome, error) {
-	cpath, err := getChromePath()
+func (c *ChromiumBrowser) GetHistoryLocation() string {
+	return c.historyLocation
+}
+
+func (c *ChromiumBrowser) GetLocalState() (*LocalState, error) {
+	return c.localState, nil
+}
+
+func GetChromiumBrowser(profile, directory string) (*ChromiumBrowser, error) {
+	cpath, err := getChromiumPath(directory)
 	if err != nil {
-		return nil, ErrFailedToGetChromePath
+		return nil, ErrFailedToGetChromiumPath
 	}
 
 	localState, err := GetLocalState(cpath)
@@ -58,9 +67,9 @@ func GetChrome(profile string) (*Chrome, error) {
 		return nil, ErrFailedToLoadProfileHistory
 	}
 
-	return &Chrome{
+	return &ChromiumBrowser{
 		Profile:         key,
-		HistoryLocation: tmpHistory,
+		historyLocation: tmpHistory,
 	}, nil
 }
 
@@ -89,16 +98,16 @@ func getHistory(cpath, profile string) string {
 	return fmt.Sprintf("%s/%s/History", cpath, profile)
 }
 
-func getChromePath() (string, error) {
+func getChromiumPath(directory string) (string, error) {
 	home, err := homedir.Dir()
 	if err != nil {
 		return "", err
 	}
 
-	return fmt.Sprintf("%s/.config/google-chrome", home), nil
+	return fmt.Sprintf("%s/.config/%s", home, directory), nil
 }
 
-func handleInvalidProfileError(profile string, localState *LocalState) {
+func handleInvalidProfileError(profile string, localState *ChromiumLocalState) {
 	fmt.Printf("invalid profile '%s', available profiles:\n", profile)
 
 	for i, profile := range localState.Profiles {

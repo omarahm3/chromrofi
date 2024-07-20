@@ -1,4 +1,4 @@
-package chrome
+package browser
 
 import (
 	"encoding/json"
@@ -7,10 +7,10 @@ import (
 )
 
 type raw_profile struct {
-	Profile profile `json:"profile"`
+	Profile profile_path `json:"profile"`
 }
 
-type profile struct {
+type profile_path struct {
 	InfoCache map[string]profile_info `json:"info_cache"`
 	Profiles  []string                `json:"profiles_order"`
 }
@@ -19,16 +19,16 @@ type profile_info struct {
 	Name string `json:"name"`
 }
 
-type LocalState struct {
-	Profiles []Profile
+type ChromiumLocalState struct {
+	Profiles []profile
 }
 
-type Profile struct {
+type profile struct {
 	ID   string
 	Name string
 }
 
-func GetLocalState(cpath string) (*LocalState, error) {
+func GetLocalState(cpath string) (*ChromiumLocalState, error) {
 	path := filepath.Join(cpath, "Local State")
 	source, err := os.ReadFile(path)
 	if err != nil {
@@ -40,13 +40,13 @@ func GetLocalState(cpath string) (*LocalState, error) {
 		return nil, err
 	}
 
-	localstate := &LocalState{}
+	localstate := &ChromiumLocalState{}
 
-	for _, profile := range p.Profile.Profiles {
-		name := p.Profile.InfoCache[profile].Name
+	for _, id := range p.Profile.Profiles {
+		name := p.Profile.InfoCache[id].Name
 
-		localstate.Profiles = append(localstate.Profiles, Profile{
-			ID:   profile,
+		localstate.Profiles = append(localstate.Profiles, profile{
+			ID:   id,
 			Name: name,
 		})
 	}
@@ -54,7 +54,7 @@ func GetLocalState(cpath string) (*LocalState, error) {
 	return localstate, nil
 }
 
-func (s *LocalState) HasProfile(id string) bool {
+func (s *ChromiumLocalState) HasProfile(id string) bool {
 	for _, profile := range s.Profiles {
 		if profile.ID == id || profile.Name == id {
 			return true
@@ -63,7 +63,7 @@ func (s *LocalState) HasProfile(id string) bool {
 	return false
 }
 
-func (s *LocalState) GetProfileKey(id string) string {
+func (s *ChromiumLocalState) GetProfileKey(id string) string {
 	for _, profile := range s.Profiles {
 		if profile.ID == id || profile.Name == id {
 			return profile.ID
