@@ -31,6 +31,7 @@ Usage:
   chromrofi [flags]
 
 Flags:
+  -b, --browser string    Browser to use (default "chrome")
   -h, --help              help for chromrofi
   -l, --limit int         Number of results to return (default 10)
   -o, --order-by string   Property to order by (default "last_visit_time")
